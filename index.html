@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SVBOD</title>
+    <meta charset="utf-8">
+    <style>
+        @font-face {
+            font-family: "Shobhika";
+            src: url(./fonts/Shobhika/Shobhika-Regular.otf) format('opentype');
+        }
+        @font-face {
+            font-family: "Noto Sans Siddham";
+            src: url(./fonts/Noto_Sans_Siddham/NotoSansSiddham-Regular.ttf);
+        }
+        .devanagari{
+            font-family: 'Shobhika';
+        }
+        .siddham {
+            font-family: 'Noto Sans Siddham';
+        }
+
+        textarea{
+            padding: 10px;
+            display: block;
+            width: 90%;
+            font-size: 3em;
+            min-height: 10em;
+        }
+    </style>
+</head>
+<script>
+    function formMap(keyArr, valArr) {
+        let map = new Map(keyArr.map((key, i) => [key, valArr[i]]));
+        return map;
+    }
+    var devanagari = [
+        "अ", "आ", "इ", "ई", "उ", "ऊ",
+        "ऋ", "ॠ", "ऌ", "ॡ",
+        "ए", "ऐ", "ओ", "औ"
+    ];
+    for (var i = 0x0915; i <= 0x0928; i++) {
+        devanagari.push(String.fromCodePoint(i));
+    }
+    for (var i = 0x092A; i <= 0x0930; i++) {
+        devanagari.push(String.fromCodePoint(i));
+    }
+    devanagari.push("ल", "व", "श", "ष", "स", "ह");
+    for (var i = 0x093E; i <= 0x0944; i++) {
+        devanagari.push(String.fromCodePoint(i));
+    }
+    devanagari.push("े", "ै", "ो", "ौ", "्", "ः", "ँ"," ")
+    var siddham_code = [
+    ];
+    for (var i = 0x11580; i <= 0x115B5; i++) {
+        siddham_code.push(i);
+    }
+    for (var i = 0x115B8; i <= 0x115BB; i++) {
+        siddham_code.push(i);
+    }
+    siddham_code.push(0x115BF, 0x115BE, 0x115BC,0x20);
+    var siddham = siddham_code.map(code => String.fromCodePoint(code));
+    const encodeMap = formMap(devanagari, siddham_code);
+    const enchantMap = formMap(siddham_code, siddham);
+</script>
+
+<body>
+    <h1>Siddham-Glyphs Viewer Based On Devanagari - SVBOD</h1>
+    <p>v1.0.0</p>
+    <p>天城文字体：Shobhika。悉昙文字体：Noto Sans Siddham。</p>
+    <p>天城文输入：</p>
+    <textarea id="DevanagariInput" class="devanagari"></textarea>
+    <p>悉昙文输出：</p>
+    <textarea id="SiddhamDisplayer" class="siddham" readonly></textarea>
+    <p>&copy;QuartzQuincy2019 2019-2025</p>
+</body>
+<script>
+    function enchant(text) {
+        text = text.split("");
+        var code = text.map(glyph => encodeMap.get(glyph));
+        var siddhams = code.map(code => enchantMap.get(code));
+        return siddhams.join("");
+    }
+    function convert(){
+        var deva = document.getElementById("DevanagariInput").value;
+        var enchanted = enchant(deva);
+        document.getElementById("SiddhamDisplayer").value = enchanted;
+    }
+    convert();
+    document.getElementById("DevanagariInput").addEventListener('input', () => {
+        convert();
+    });
+</script>
+
+</html>
