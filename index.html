@@ -9,23 +9,104 @@
             font-family: "Shobhika";
             src: url(./fonts/Shobhika/Shobhika-Regular.otf) format('opentype');
         }
+
         @font-face {
             font-family: "Noto Sans Siddham";
             src: url(./fonts/Noto_Sans_Siddham/NotoSansSiddham-Regular.ttf);
         }
-        .devanagari{
+
+        .devanagari {
             font-family: 'Shobhika';
         }
+
         .siddham {
             font-family: 'Noto Sans Siddham';
         }
 
-        textarea{
-            padding: 10px;
-            display: block;
+        .text-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .text-group textarea {
             width: 90%;
-            font-size: 3em;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 38px;
             min-height: 10em;
+            transition: all 0.3s ease;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .text-group textarea:focus {
+            border-color: #4d90fe;
+            box-shadow: 0 0 0 2px rgba(77, 144, 254, 0.2);
+        }
+
+        .text-group textarea:hover {
+            border-color: #a0c0ff;
+        }
+
+        @media (max-width: 900px) {
+            .text-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .text-group:nth-child(3) {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .text-container {
+                grid-template-columns: 1fr;
+            }
+
+            .text-group:nth-child(3) {
+                grid-column: span 1;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        #IASTKeyboard {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 10px;
+        }
+
+        .key {
+            display: block;
+            font-size: 25px;
+            
+            padding: 5px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            #IASTKeyboard {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 5px;
+            }
         }
     </style>
 </head>
@@ -49,7 +130,7 @@
     for (var i = 0x093E; i <= 0x0944; i++) {
         devanagari.push(String.fromCodePoint(i));
     }
-    devanagari.push("े", "ै", "ो", "ौ", "्", "ः", "ँ"," ")
+    devanagari.push("े", "ै", "ो", "ौ", "्", "ः", "ँ", " ");
     var siddham_code = [
     ];
     for (var i = 0x11580; i <= 0x115B5; i++) {
@@ -58,38 +139,85 @@
     for (var i = 0x115B8; i <= 0x115BB; i++) {
         siddham_code.push(i);
     }
-    siddham_code.push(0x115BF, 0x115BE, 0x115BC,0x20);
+    siddham_code.push(0x115BF, 0x115BE, 0x115BC, 0x20);
     var siddham = siddham_code.map(code => String.fromCodePoint(code));
     const encodeMap = formMap(devanagari, siddham_code);
     const enchantMap = formMap(siddham_code, siddham);
+    const finalMap = formMap(devanagari, siddham);
 </script>
+<script src="./plugins/iast.js"></script>
 
 <body>
     <h1>Siddham-Glyphs Viewer Based On Devanagari - SVBOD</h1>
-    <p>v1.0.0</p>
+    <p>v1.1.0</p>
     <p>天城文字体：Shobhika。悉昙文字体：Noto Sans Siddham。</p>
-    <p>天城文输入：</p>
-    <textarea id="DevanagariInput" class="devanagari"></textarea>
-    <p>悉昙文输出：</p>
-    <textarea id="SiddhamDisplayer" class="siddham" readonly></textarea>
+    <div>
+        <p>IAST 键盘</p>
+        <div id="IASTKeyboard"></div>
+    </div>
+    <div class="text-container">
+        <div class="text-group">
+            <p>IAST输入：</p>
+            <textarea id="IASTInput" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;"></textarea>
+        </div>
+        <div class="text-group">
+            <p>天城文输入：</p>
+            <textarea id="DevanagariInput" class="devanagari"></textarea>
+        </div>
+        <div class="text-group">
+            <p>悉昙文输出：</p>
+            <textarea id="SiddhamDisplayer" class="siddham" readonly></textarea>
+        </div>
+    </div>
     <p>&copy;QuartzQuincy2019 2019-2025</p>
 </body>
 <script>
     function enchant(text) {
         text = text.split("");
-        var code = text.map(glyph => encodeMap.get(glyph));
-        var siddhams = code.map(code => enchantMap.get(code));
+        var siddhams = text.map(glyph => finalMap.get(glyph));
         return siddhams.join("");
     }
-    function convert(){
+    function convert() {
         var deva = document.getElementById("DevanagariInput").value;
         var enchanted = enchant(deva);
         document.getElementById("SiddhamDisplayer").value = enchanted;
+        return enchanted;
     }
-    convert();
+    function retransliterate() {
+        var iast = document.getElementById("IASTInput").value;
+        var deva = iastToDeva(iast);
+        document.getElementById("DevanagariInput").value = deva;
+        return deva;
+    }
+    document.getElementById("IASTInput").addEventListener('input', () => {
+        var deva = retransliterate();
+        document.getElementById("SiddhamDisplayer").value = enchant(deva);
+    });
     document.getElementById("DevanagariInput").addEventListener('input', () => {
         convert();
     });
+</script>
+<script>
+    var E_IASTKeyboard = document.getElementById("IASTKeyboard");
+    var difficulty = [
+        'ā', 'ī', 'ū', 'ṛ', 'ṝ', 'ḷ', 'ḹ', 'ḥ', 'ṃ',
+        'ṅ', 'ñ', 'ṭ', 'ṭh', 'ḍ', 'ḍh', 'ṇ', 'ś', 'ṣ'
+    ];
+    function addIast(text) {
+        document.getElementById("IASTInput").value += text;
+    }
+    for (var i = 0; i < difficulty.length; i++) {
+        var key = document.createElement("div");
+        key.classList.add("key");
+        var e = difficulty[i];
+        key.innerHTML = e;
+        key.onclick = function () {
+            addIast(this.innerHTML);
+            var deva = retransliterate();
+            document.getElementById("SiddhamDisplayer").value = enchant(deva);
+        }
+        E_IASTKeyboard.appendChild(key);
+    }
 </script>
 
 </html>
