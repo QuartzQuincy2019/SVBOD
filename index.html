@@ -1,252 +1,82 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="zh-CN">
 <head>
-    <title>SVBOD</title>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        @font-face {
-            font-family: "Shobhika";
-            src: url(./fonts/Shobhika/Shobhika-Regular.otf) format('opentype');
-        }
-
-        @font-face {
-            font-family: "Noto Sans Siddham";
-            src: url(./fonts/Noto_Sans_Siddham/NotoSansSiddham-Regular.ttf);
-        }
-
-        .devanagari {
-            font-family: 'Shobhika';
-        }
-
-        .siddham {
-            font-family: 'Noto Sans Siddham';
-        }
-
-        .text-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            margin-top: 20px;
-        }
-
-        .text-group textarea {
-            width: 90%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 28px;
-            min-height: 500px;
-            transition: all 0.3s ease;
-            outline: none;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
-        .text-group textarea:focus {
-            border-color: #4d90fe;
-            box-shadow: 0 0 0 2px rgba(77, 144, 254, 0.2);
-        }
-
-        .text-group textarea:hover {
-            border-color: #a0c0ff;
-        }
-
-        @media (max-width: 900px) {
-            .text-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .text-group:nth-child(3) {
-                grid-column: span 2;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .text-container {
-                grid-template-columns: 1fr;
-            }
-
-            .text-group:nth-child(3) {
-                grid-column: span 1;
-            }
-
-            .container {
-                padding: 20px 15px;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-        }
-
-        #IASTKeyboard {
-            display: grid;
-            grid-template-columns: repeat(18, 1fr);
-            gap: 5px;
-        }
-
-        .key {
-            display: block;
-            font-size: 20px;
-            padding: 2px;
-            margin: 2px;
-            border: 3px solid #000;
-            box-shadow: 0 0 3px #000000;
-            border-radius: 8px;
-            text-align: center;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: 600;
-            transition: all;
-            transition-duration: 300ms;
-            cursor: pointer;
-        }
-
-        .key:hover {
-            border-color: #1064ec;
-            background-color: #1064ec;
-            color: #ffffff;
-            text-shadow: 0 0 3px #ffffff;
-            box-shadow: 0 0 3px #4d90fe;
-        }
-
-        .key:active {
-            border-color: #00d539;
-            background-color: #00d539;
-            box-shadow: 0 0 3px #48ff00;
-        }
-
-        @media (max-width: 768px) {
-            #IASTKeyboard {
-                display: grid;
-                grid-template-columns: repeat(8, 1fr);
-                gap: 3px;
-            }
-        }
-        .sticky{
-            position: sticky;
-            top: 0;
-        }
-        .header{
-            border: 3px solid #000;
-            border-radius: 8px;
-            box-shadow: 0 0 4px #000;
-            padding: 2px;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SVBOD Improved</title>
+    <link rel="stylesheet" href="css/general.css" />
 </head>
-<script>
-    function formMap(keyArr, valArr) {
-        let map = new Map(keyArr.map((key, i) => [key, valArr[i]]));
-        return map;
-    }
-    var devanagari = [
-        "अ", "आ", "इ", "ई", "उ", "ऊ",
-        "ऋ", "ॠ", "ऌ", "ॡ",
-        "ए", "ऐ", "ओ", "औ"
-    ];
-    for (var i = 0x0915; i <= 0x0928; i++) {
-        devanagari.push(String.fromCodePoint(i));
-    }
-    for (var i = 0x092A; i <= 0x0930; i++) {
-        devanagari.push(String.fromCodePoint(i));
-    }
-    devanagari.push("ल", "व", "श", "ष", "स", "ह");
-    for (var i = 0x093E; i <= 0x0944; i++) {
-        devanagari.push(String.fromCodePoint(i));
-    }
-    devanagari.push("े", "ै", "ो", "ौ", "्", "ः", "ँ", " ");
-    var siddham_code = [
-    ];
-    for (var i = 0x11580; i <= 0x115B5; i++) {
-        siddham_code.push(i);
-    }
-    for (var i = 0x115B8; i <= 0x115BB; i++) {
-        siddham_code.push(i);
-    }
-    siddham_code.push(0x115BF, 0x115BE, 0x115BC, 0x20);
-    var siddham = siddham_code.map(code => String.fromCodePoint(code));
-    const encodeMap = formMap(devanagari, siddham_code);
-    const enchantMap = formMap(siddham_code, siddham);
-    const finalMap = formMap(devanagari, siddham);
-</script>
-<script src="./plugins/iast.js"></script>
-
 <body>
-    <h1>Siddham-Glyphs Viewer Based On Devanagari - SVBOD</h1>
-    <p>v1.1.3</p>
-    <p>天城文字体：Shobhika。悉昙文字体：Noto Sans Siddham。</p>
-    <div class="sticky header" style="background-color: #ffffff;">
-        <p><strong>IAST 键盘</strong>：点击可复制</p>
-        <div id="IASTKeyboard"></div>
-    </div>
-    <div class="text-container">
-        <div class="text-group">
-            <p>IAST输入：</p>
-            <textarea id="IASTInput" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;"></textarea>
-        </div>
-        <div class="text-group">
-            <p>天城文输入：</p>
-            <textarea id="DevanagariInput" class="devanagari"></textarea>
-        </div>
-        <div class="text-group">
-            <p>悉昙文输出：</p>
-            <textarea id="SiddhamDisplayer" class="siddham" readonly></textarea>
-        </div>
-    </div>
-    <p>&copy;QuartzQuincy2019 2019-2025</p>
-</body>
-<script>
-    function enchant(text) {
-        text = text.split("");
-        var siddhams = text.map(glyph => finalMap.get(glyph));
-        return siddhams.join("");
-    }
-    function convert() {
-        var deva = document.getElementById("DevanagariInput").value;
-        var enchanted = enchant(deva);
-        document.getElementById("SiddhamDisplayer").value = enchanted;
-        return enchanted;
-    }
-    function retransliterate() {
-        var iast = document.getElementById("IASTInput").value;
-        var deva = iastToDeva(iast);
-        document.getElementById("DevanagariInput").value = deva;
-        return deva;
-    }
-    document.getElementById("IASTInput").addEventListener('input', () => {
-        var deva = retransliterate();
-        document.getElementById("SiddhamDisplayer").value = enchant(deva);
-    });
-    document.getElementById("DevanagariInput").addEventListener('input', () => {
-        convert();
-    });
-</script>
-<script>
-    var E_IASTKeyboard = document.getElementById("IASTKeyboard");
-    var difficulty = [
-        'ā', 'ī', 'ū', 'ṛ', 'ṝ', 'ḷ', 'ḹ', 'ḥ', 'ṃ',
-        'ṅ', 'ñ', 'ṭ', 'ṭh', 'ḍ', 'ḍh', 'ṇ', 'ś', 'ṣ'
-    ];
-    function addIast(text) {
-        document.getElementById("IASTInput").value += text;
-    }
-    for (var i = 0; i < difficulty.length; i++) {
-        var key = document.createElement("div");
-        key.classList.add("key");
-        var e = difficulty[i];
-        key.innerHTML = e;
-        key.onclick = function () {
-            navigator.clipboard.writeText(this.innerHTML);
-            addIast(this.innerHTML);
-            var deva = retransliterate();
-            document.getElementById("SiddhamDisplayer").value = enchant(deva);
-        }
-        E_IASTKeyboard.appendChild(key);
-    }
-</script>
 
+    <!-- 顶部：IAST 特殊字符（按钮） -->
+    <header class="special-chars" id="specialChars">
+        <button data-char="ā">ā</button>
+        <button data-char="ī">ī</button>
+        <button data-char="ū">ū</button>
+        <button data-char="ṛ">ṛ</button>
+        <button data-char="ṝ">ṝ</button>
+        <button data-char="ḷ">ḷ</button>
+        <button data-char="ḹ">ḹ</button>
+        <button data-char="ṃ">ṃ</button>
+        <button data-char="ḥ">ḥ</button>
+        <button data-char="ś">ś</button>
+        <button data-char="ṣ">ṣ</button>
+        <button data-char="ṭ">ṭ</button>
+        <button data-char="ḍ">ḍ</button>
+        <button data-char="ṇ">ṇ</button>
+        <button data-char="ṅ">ṅ</button>
+        <button data-char="ñ">ñ</button>
+    </header>
+
+    <!-- 控制栏：字体大小滑块 -->
+    <div class="controls">
+        <label for="fontSizeSlider" title="调整所有文本框字体大小">字体大小</label>
+        <input type="range" id="fontSizeSlider" min="12" max="80" value="24" step="2" />
+        <span id="fontSizeDisplay">24px</span>
+    </div>
+
+    <!-- 主区域：三栏 -->
+    <main class="container" id="appContainer">
+        <section class="panel panel-deva" id="panelDeva">
+            <div class="panel-label">Devanāgarī 天城体</div>
+            <textarea class="panel-textarea" id="devaInput" placeholder="输入天城文…" spellcheck="false"></textarea>
+        </section>
+        <section class="panel panel-iast" id="panelIast">
+            <div class="panel-label">IAST 国际梵语音译字母</div>
+            <textarea class="panel-textarea" id="iastInput" placeholder="vajracchedikāprajñāpāramitāsūtra" spellcheck="false"></textarea>
+        </section>
+        <section class="panel panel-siddham" id="panelSiddham">
+            <div class="panel-label">Siddhaṃ 悉昙体</div>
+            <textarea class="panel-textarea" id="siddhamInput" placeholder="悉昙体…" spellcheck="false"></textarea>
+        </section>
+    </main>
+
+    <!-- 手机端控制 -->
+    <div class="mobile-toggle" id="mobileToggle">
+        <button id="toggleDevaBtn">☰ 显示天城文</button>
+    </div>
+
+    <!-- 使用说明 -->
+    <section class="instructions">
+        <details>
+            <summary>使用说明</summary>
+            <ul>
+                <li><strong>转写流程</strong>：IAST ↔ Devanagari ↔ Siddham，任意框输入，其余自动同步。</li>
+                <li><strong>特殊字符</strong>：点击上方按钮，在 IAST 输入框的<strong>光标位置</strong>插入相应字符。</li>
+                <li><strong>仰月点</strong>：在 IAST 中输入 <kbd>~</kbd> 即可（例如 <code>o~</code>）。</li>
+                <li><strong>字体大小</strong>：使用上方滑块同时调整三个文本框的字体大小。</li>
+                <li><strong>移动端</strong>：天城文框默认隐藏，点击按钮可显示/隐藏。</li>
+            </ul>
+        </details>
+    </section>
+
+    <!-- 底部脚注 -->
+    <footer class="footer">
+        <span>Siddham-Glyphs Viewer Based On Devanagari <i>v2.0.0</i> - <strong>SVBOD</strong> @QuartzQuincy2019 [2019-2026]</span>
+    </footer>
+
+    <!-- 脚本 -->
+    <script src="plugins/BIndicTl.js"></script>
+    <script src="plugins/core.js"></script>
+</body>
 </html>
