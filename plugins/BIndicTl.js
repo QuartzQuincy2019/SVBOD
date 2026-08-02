@@ -28,7 +28,7 @@
     const IAST_TO_DEVANAGARI_SIGN = {
         'ṃ': 'ं',
         'ḥ': 'ः',
-        '~': 'ँ'
+        'm̐': 'ँ'          // 用 m̐ 表示 candrabindu（仰月点）
     };
     const IAST_TO_DEVANAGARI_PUNCT = {
         '|': '।',
@@ -60,7 +60,7 @@
 
     // ---------- 辅助函数 ----------
     function tokenizeIAST(text) {
-        const multi = ['kh','gh','ch','jh','ṭh','ḍh','th','dh','ph','bh','ai','au','||'];
+        const multi = ['kh','gh','ch','jh','ṭh','ḍh','th','dh','ph','bh','ai','au','||', 'm̐'];
         multi.sort((a,b) => b.length - a.length);
         const tokens = [];
         let i = 0;
@@ -90,6 +90,7 @@
     // ---------- 核心转换 IAST -> Devanagari ----------
     function iastToDevanagari(iastText) {
         if (!iastText) return '';
+        iastText = iastText.toLowerCase();   // 忽略大小写
         const tokens = tokenizeIAST(iastText);
         let result = '';
         let lastWasConsonant = false;
@@ -176,7 +177,9 @@
             'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au'
         };
         const signs = {
-            'ं': 'ṃ', 'ः': 'ḥ', 'ँ': '~'
+            'ं': 'ṃ',
+            'ः': 'ḥ',
+            'ँ': 'm̐'
         };
         const punct = {
             '।': '|', '॥': '||'

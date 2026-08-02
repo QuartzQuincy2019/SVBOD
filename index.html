@@ -5,11 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SVBOD Improved</title>
     <link rel="stylesheet" href="css/general.css" />
+    <style>
+        /* 便捷输入切换按钮样式（可移入 general.css） */
+        #quickInputToggle {
+            padding: 4px 12px;
+            margin-left: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+        #quickInputToggle.active {
+            background: #2c7be5;
+            color: #fff;
+            border-color: #2c7be5;
+        }
+        #quickInputToggle:hover {
+            background: #e9ecef;
+        }
+        #quickInputToggle.active:hover {
+            background: #1a5fb4;
+        }
+
+        /* IAST 输入框激活状态提示 */
+        #iastInput.quick-mode-active {
+            border-color: #2c7be5;
+            box-shadow: 0 0 0 2px rgba(44, 123, 229, 0.2);
+        }
+    </style>
 </head>
 <body>
 
     <!-- 顶部：IAST 特殊字符（按钮） -->
     <header class="special-chars" id="specialChars">
+        <!--
         <button data-char="ā">ā</button>
         <button data-char="ī">ī</button>
         <button data-char="ū">ū</button>
@@ -26,6 +57,9 @@
         <button data-char="ṇ">ṇ</button>
         <button data-char="ṅ">ṅ</button>
         <button data-char="ñ">ñ</button>
+        <button data-char="m̐">m̐</button>
+    -->
+        <button id="quickInputToggle">⌨️ IAST便捷输入</button>
     </header>
 
     <!-- 控制栏：字体大小滑块 -->
@@ -62,17 +96,18 @@
             <summary>使用说明</summary>
             <ul>
                 <li><strong>转写流程</strong>：IAST ↔ Devanagari ↔ Siddham，任意框输入，其余自动同步。</li>
-                <li><strong>特殊字符</strong>：点击上方按钮，在 IAST 输入框的<strong>光标位置</strong>插入相应字符。</li>
-                <li><strong>仰月点</strong>：在 IAST 中输入 <kbd>~</kbd> 即可（例如 <code>o~</code>）。</li>
+                <!-- <li><strong>特殊字符</strong>：点击上方按钮，在 IAST 输入框的<strong>光标位置</strong>插入相应字符。</li> -->
+                <li><strong>仰月点</strong>：在 IAST 中输入 <kbd>m̐</kbd>（或在便捷模式下输入 <kbd>`m</kbd>或<kbd>//</kbd>）。</li>
                 <li><strong>字体大小</strong>：使用上方滑块同时调整三个文本框的字体大小。</li>
                 <li><strong>移动端</strong>：天城文框默认隐藏，点击按钮可显示/隐藏。</li>
+                <li><strong>便捷输入模式</strong>：点击 ⌨️ IAST便捷输入 开启，基于 Velthuis 和 SLP1 转写方案设计，有改动。支持：长元音只需重复，上方加撇的<code>z | 's | "s | s/ | ;s | `s → ś</code>，下方加点的止韵<code>.m→ṃ</code>，随韵<code>.h→ḥ</code>，卷舌辅音<code>.s→ṣ</code>、<code>w | .t → ṭ</code>、<code>q | .d → ḍ</code>、<code>.n→ṇ</code>，以及元音<code>.r→ṛ</code>、<code>.l→ḷ</code>，两个元音长音<code>..r→ṝ</code>、<code>..l→ḹ</code>，上方加点的<code>'n | "n → ṅ</code>，上方加波浪线的<code>`n | ~n → ñ</code>，仰月点<code>`m | ~m | // → m̐</code>、（不区分大小写）。</li>
             </ul>
         </details>
     </section>
 
     <!-- 底部脚注 -->
     <footer class="footer">
-        <span>Siddham-Glyphs Viewer Based On Devanagari <i>v2.0.0</i> - <strong>SVBOD</strong> @QuartzQuincy2019 [2019-2026]</span>
+        <span>Siddham-Glyphs Viewer Based On Devanagari <i>v3.0.0</i> - <strong>SVBOD</strong> @QuartzQuincy2019 [2019-2026]</span>
     </footer>
 
     <!-- 脚本 -->
